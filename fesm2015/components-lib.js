@@ -1,5 +1,6 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { ɵɵdefineInjectable, ɵɵinject, Injectable, Component, NgModule } from '@angular/core';
+import { ɵɵdefineInjectable, ɵɵinject, Injectable, Component, Input, NgModule } from '@angular/core';
+import { map } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 
 class ComponentsLibService {
@@ -21,6 +22,37 @@ ComponentsLibService.decorators = [
 ComponentsLibService.ctorParameters = () => [
     { type: HttpClient }
 ];
+
+class PosterComponent {
+    constructor(tvmaze) {
+        this.tvmaze = tvmaze;
+    }
+    ngOnInit() {
+        this.posterUrl$ = this.tvmaze
+            .getShow(this.showId)
+            .pipe(map(show => show.image.medium));
+    }
+}
+PosterComponent.decorators = [
+    { type: Component, args: [{
+                selector: 'tm-poster',
+                template: `<img *ngIf="posterUrl$ | async as src" [src]="src" />`,
+                styles: [`
+  :host {
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 4px;
+    line-height: 0;
+  }
+  `]
+            },] }
+];
+PosterComponent.ctorParameters = () => [
+    { type: ComponentsLibService }
+];
+PosterComponent.propDecorators = {
+    showId: [{ type: Input }]
+};
 
 class ComponentsLibComponent {
     constructor() { }
@@ -57,5 +89,5 @@ ComponentsLibModule.decorators = [
  * Generated bundle index. Do not edit.
  */
 
-export { ComponentsLibComponent, ComponentsLibModule, ComponentsLibService };
+export { ComponentsLibModule, ComponentsLibService, PosterComponent, ComponentsLibComponent as ɵa };
 //# sourceMappingURL=components-lib.js.map
